@@ -5,6 +5,7 @@ import Item from './Item';
 class App extends React.Component{
   constructor(){
     super();
+    this.input = React.createRef();
     this.state = {
       data: [
         {name: 'Milk'},
@@ -17,10 +18,12 @@ class App extends React.Component{
 
   add(){
     var items = this.state.data;
-    items.push({ name: 'Apple'});
+    items.push({ name: this.input.current.value});
     this.setState({
       data: items
     });
+    this.input.current.value = "";
+    this.input.current.focus();
   }
   render(){
     return (
@@ -37,7 +40,7 @@ class App extends React.Component{
         {
           /* {this.state.data.map(v => <Item name={v.name} />)} */ } 
         </ul>
-
+        <input type="text" ref={this.input} />
         <button onClick={this.add}>Add Item</button>
       </div>  
     )
