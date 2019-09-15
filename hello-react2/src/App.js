@@ -13,13 +13,20 @@ import React from 'react';
 //   }
 // }
 
-//function Item(props){}
-const Item = props =>
+
+//function Item(props){
+//return(
+//  <li>{props.name}</li>   
+//)}this. ကိုုျဖဳတ္လိုု့ရ
+
+//const Item = props => (<li>{props.name}</li>); 
+
+const Item = ({user, remove})=>
   (
     <li>
-      {props.user.name}&nbsp;
+      {user.name}&nbsp;
       <a href="/#" onClick={
-        props.remove(props.user.id)
+        remove(user.id)
       }>Del</a>
     </li>
   ); //ျပဳျပင္ေျပာင္းလဲလုုိ့မရ stateless immutable component
