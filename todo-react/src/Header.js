@@ -7,22 +7,34 @@ import{
     IconButton,
     Typography,
     Badge,
+    Menu,
+    MenuItem,
 } from "@material-ui/core";
 
 import DoneAllIcon from "@material-ui/icons/DoneAll";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 const styles = {
-    header:{
-        margin    : 0,
-        padding   : 20,
-        background: 'black',
-        color     : 'white',
-        fontSize  : 21,
+    title:{
+        flexGrow  : '1',
+        marginLeft: 20,
     }
 };
 
 class Header extends React.Component {
+    state = {
+        anchorEl: null
+    }
+    showMenu = (event) => {
+        this.setState({
+            anchorEl: event.currentTarget
+        });
+    }
+    hideMenu = (event) => {
+        this.setState({
+            anchorEl: null
+        });
+    }
     render() {
         return (
             <AppBar position="static">
@@ -36,6 +48,18 @@ class Header extends React.Component {
                     <IconButton color="inherit">
                         <MoreVertIcon />
                     </IconButton>
+                    <Menu
+                        anchorEl = {this.state.anchorEl}
+                        open     = {Boolean(this.state.anchorEl)}
+                        onClose  = {this.hideMenu}
+                    >
+                        <MenuItem onClick={()=>{
+                            this.hideMenu();
+                            this.props.clear();
+                        }}>
+                            Clear All Done
+                        </MenuItem>
+                    </Menu>
                 </Toolbar>
             </AppBar>
         );

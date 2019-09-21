@@ -1,3 +1,9 @@
+import InputBase from "@material-ui/core/InputBase";
+import Paper from "@material-ui/core/Paper";
+import Divider from "@material-ui/core/Divider";
+import IconButton from "@material-ui/core/IconButton";
+import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
+
 import React from 'react';
 import Item from "./Item";
 import Header from "./Header";
@@ -16,6 +22,19 @@ import Todo from "./Todo";
 //     )
 //   }
 // }
+
+const styles ={
+  paper: {
+    display: 'flex'
+  },
+  input:{
+    flexGrow: '1',
+    padding : 10,
+  },
+  buttonadd:{
+    marginLeft: -20,
+  }
+}
 
 class App extends React.Component {
     input  = React.createRef();
@@ -61,17 +80,31 @@ class App extends React.Component {
         });
     }
 
+    clear = () => {
+      this.setState({
+        tasks: this.state.tasks.filter(item => item.status === 0)
+      })
+    }
+
     render() {
         return (
             <div>
                 <Header count={ this.state.tasks.filter(
                         item => item.status === 0
-                    ).length } />
-
-                <div>
-                    <input type="text" ref={this.input} />
-                    <button onClick={this.add}>+</button>
-                </div>
+                    ).length } 
+                clear = {this.clear}
+                />
+  
+                <Paper style={styles.paper}>
+                  <InputBase
+                    inputRef    = {this.input}
+                    placeholder = "Enter Task"
+                    style       = {styles.input}
+                  />
+                  <IconButton onClick={this.add} style={styles.buttonadd}>
+                    <PlaylistAddIcon />
+                  </IconButton>
+                </Paper>
 
                 <Todo
                     done   = {this.done}
@@ -79,7 +112,7 @@ class App extends React.Component {
                     remove = {this.remove}
                     items  = {this.state.tasks.filter(item => item.status === 0)}
                 />
-
+                <Divider />
                 <Todo
                     done   = {this.done}
                     undo   = {this.undo}

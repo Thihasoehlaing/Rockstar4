@@ -1,22 +1,26 @@
 import React from "react";
-
+import ListItem from '@material-ui/core/ListItem';
+import DeleteIcon from "@material-ui/icons/Delete";
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
 class Item extends React.Component {
     render() {
         return (
-            <li>
+            <ListItem>
                 {this.props.item.status ?
-                    <input type="checkbox" checked
+                    <Checkbox checked="true"
                         onChange={this.props.undo(this.props.item._id)} />
                     : 
-                    <input type="checkbox"
+                    <Checkbox
                         onChange={this.props.done(this.props.item._id)} />
                 }
-
-                {this.props.item.subject}
-                <a href="/#" onClick={this.props.remove(this.props.item._id)}>
-                    &times;
-        </a>
-            </li>
+                <ListItemText primary={this.props.item.subject} />
+                
+                <IconButton onClick={this.props.remove(this.props.item._id)} >
+                    <DeleteIcon />
+                </IconButton>
+            </ListItem>
         )
     }
 }
