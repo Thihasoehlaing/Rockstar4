@@ -45,7 +45,7 @@ class Header extends React.Component {
                     <Typography variant="h6" style={styles.title}>
                         Todo List
                     </Typography>
-                    <IconButton color="inherit">
+                    <IconButton color="inherit" onClick={this.showMenu}>
                         <MoreVertIcon />
                     </IconButton>
                     <Menu
