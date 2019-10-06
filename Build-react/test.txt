@@ -1,0 +1,9 @@
+db.tasks.find().sort({"subject": 1})
+
+db.tasks.find().skip(5).limit(10)
+
+db.tasks.find().createIndex({_id:1},{
+    name: "PrimaryKey",
+    unique: true,
+    sparse: ture,
+})
