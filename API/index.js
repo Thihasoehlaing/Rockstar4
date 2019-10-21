@@ -1,10 +1,12 @@
 var express = require('express');
 var app = express();
+var cors = require('cors');
 
 var mongojs    = require('mongojs');
 var db         = mongojs('todo', ['tasks']);
 var BodyParser = require('body-parser');
 
+app.use(cors());
 app.use(BodyParser.urlencoded({extended: false}));
 app.use(BodyParser.json());
 

@@ -39,8 +39,16 @@ const store = createStore( (state = { tasks:[] }, action) => {
     }
 });
 
-store.dispatch({ type: 'ADD', task: { _id: 1, subject: 'Milk', status: 0 } });
-store.dispatch({ type: 'ADD', task: { _id: 2, subject: 'Egg', status: 0 } });
+const api = 'http://localhost:8000/tasks';
+
+fetch(api).then(res => res.json()).then(json => {
+    json.map(task => {
+        store.dispatch({
+            type: 'ADD',
+            task
+        });
+    });
+});
 
 ReactDOM.render(
     <Provider store={store}>

@@ -1,50 +1,92 @@
-import React from 'react';
-import Item from './Item';
+import React from "react";
+import Todo from "./Todo";
+import Header from "./Header";
+import { connect } from 'react-redux';
 
+let autoid = 2;
 
-class App extends React.Component{
-  constructor(){
-    super();
-    this.input = React.createRef();
-    this.state = {
-      data: [
-        {name: 'Milk'},
-        {name: 'Bread'},
-        {name: 'Butter'},
-      ]
-    }
-    this.add = this.add.bind(this);
-  }
+const App = props => {
+    let input = React.createRef();
 
-  add(){
-    var items = this.state.data;
-    items.push({ name: this.input.current.value});
-    this.setState({
-      data: items
-    });
-    this.input.current.value = "";
-    this.input.current.focus();
-  }
-  render(){
     return (
-      <div>
-        < ul > {
-          this.state.data.map(function (v) {
-            return <Item name = {
-              v.name
-            }
-            />
-          })
-        }
+        <div>
+            <Header count={ props.tasks.filter(
+                    item => item.status === 0
+                ).length } />
 
-        {
-          /* {this.state.data.map(v => <Item name={v.name} />)} */ } 
-        </ul>
-        <input type="text" ref={this.input} />
-        <button onClick={this.add}>Add Item</button>
-      </div>  
-    )
-  }
+            <div>
+                <input type="text" ref={input} />
+                <button onClick={() => {
+                    props.add(input.current.value);
+                }}>+</button>
+            </div>
+
+            <Todo
+                done={props.done}
+                undo={props.undo}
+                remove={props.remove}
+                items={props.tasks.filter(item => item.status === 0)}
+            />
+
+            <Todo
+                done={props.done}
+                undo={props.undo}
+                remove={props.remove}
+                items={props.tasks.filter(item => item.status === 1)}
+            />
+        </div>
+    );
 }
 
-export default App;
+const api = 'http://localhost:8000/tasks';
+
+const ReduxApp = connect(state => {
+    return {
+        tasks: state.tasks
+    }
+}, dispatch => {
+    return {
+        add: subject => {
+            fetch(api, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subject })
+            }).then(res => res.json()).then(task => {
+                dispatch({ type: 'ADD', task });
+            });
+        },
+        remove: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'DELETE'
+            }).then(res => {
+                dispatch({ type: 'DEL', _id })
+            });
+        },
+        done: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 1 })
+            }).then(res => {
+                dispatch({ type: 'DONE', _id })
+            });
+        },
+        undo: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 0 })
+            }).then(res => {
+                dispatch({ type: 'UNDO', _id })
+            });
+        },
+    }
+})(App);
+
+export default ReduxApp;

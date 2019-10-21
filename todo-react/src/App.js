@@ -5,7 +5,7 @@ import IconButton from "@material-ui/core/IconButton";
 import PlaylistAddIcon from "@material-ui/icons/PlaylistAdd";
 
 import React from 'react';
-import Item from "./Item";
+//import Item from "./Item";
 import Header from "./Header";
 import Todo from "./Todo";
 
@@ -22,6 +22,8 @@ import Todo from "./Todo";
 //     )
 //   }
 // }
+
+const api = 'http://localhost:8000/tasks';
 
 const styles ={
   paper: {
@@ -40,26 +42,43 @@ class App extends React.Component {
     input  = React.createRef();
     autoid = 3;
     state  = {
-        tasks: [
-            { _id: 1, subject: 'Milk', status: 0 },
-            { _id: 2, subject: 'Bread', status: 1 },
-            { _id: 3, subject: 'Butter', status: 0 },
-        ]
+        tasks: []
+    }
+
+    componentWillMount(){
+        fetch(api).then(res => res.json()).then(json => {
+            this.setState({
+                tasks:json
+            });
+        });
     }
 
     add = () => {
-        this.setState({
-            tasks: [
+        let subject = this.input.current.value;
+        fetch(api, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({subject})
+        }).then(res => res.json()).then( json => {
+            this.setState({
+                tasks:[
                 ...this.state.tasks,
-                { _id: ++this.autoid, subject: this.input.current.value, status: 0 }
-            ]
+                json
+                ]
+            });
         });
     }
 
     remove = (_id) => () => {
-        this.setState({
-            tasks: this.state.tasks.filter(item => item._id !== _id)
-        });
+        fetch(`${api}/${_id}`, {
+            method: 'DELETE'
+        }).then(res => {
+            this.setState({
+                tasks: this.state.tasks.filter(item => item._id !== _id)
+            });
+        });      
     }
 
     done = (_id) => () => {
@@ -72,11 +91,19 @@ class App extends React.Component {
     }
 
     undo = (_id) => () => {
-        this.setState({
-            tasks: this.state.tasks.map(item => {
-                if(item._id === _id) item.status = 0;
-                return item;
-            })
+        fetch(`${api}/${_id}`, {
+            method: 'PUT',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 1})
+        }).then(res => {
+            this.setState({
+                tasks: this.state.tasks.map(item => {
+                    if(item._id === _id) item.status = 0;
+                    return item;
+                })
+            });
         });
     }
 

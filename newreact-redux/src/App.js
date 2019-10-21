@@ -17,30 +17,28 @@ const App = props => {
             <div>
                 <input type="text" ref={input} />
                 <button onClick={() => {
-                    props.add({
-                        _id    : ++autoid,
-                        subject: input.current.value,
-                        status : 0,
-                    });
+                    props.add(input.current.value);
                 }}>+</button>
             </div>
 
             <Todo
-                done   = {props.done}
-                undo   = {props.undo}
-                remove = {props.remove}
-                items  = {props.tasks.filter(item => item.status === 0)}
+                done={props.done}
+                undo={props.undo}
+                remove={props.remove}
+                items={props.tasks.filter(item => item.status === 0)}
             />
 
             <Todo
-                done   = {props.done}
-                undo   = {props.undo}
-                remove = {props.remove}
-                items  = {props.tasks.filter(item => item.status === 1)}
+                done={props.done}
+                undo={props.undo}
+                remove={props.remove}
+                items={props.tasks.filter(item => item.status === 1)}
             />
         </div>
     );
 }
+
+const api = 'http://localhost:8000/tasks';
 
 const ReduxApp = connect(state => {
     return {
@@ -48,10 +46,46 @@ const ReduxApp = connect(state => {
     }
 }, dispatch => {
     return {
-        add   : task => dispatch({ type: 'ADD', task }),
-        remove: _id => dispatch({ type: 'DEL', _id }),
-        done  : _id => dispatch({ type: 'DONE', _id }),
-        undo  : _id => dispatch({ type: 'UNDO', _id }),
+        add: subject => {
+            fetch(api, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subject })
+            }).then(res => res.json()).then(task => {
+                dispatch({ type: 'ADD', task });
+            });
+        },
+        remove: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'DELETE'
+            }).then(res => {
+                dispatch({ type: 'DEL', _id })
+            });
+        },
+        done: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 1 })
+            }).then(res => {
+                dispatch({ type: 'DONE', _id })
+            });
+        },
+        undo: _id => {
+            fetch(`${api}/${_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: 0 })
+            }).then(res => {
+                dispatch({ type: 'UNDO', _id })
+            });
+        },
     }
 })(App);
 
