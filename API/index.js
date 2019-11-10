@@ -1,5 +1,5 @@
 var express = require('express');
-var app = express();
+var app  = express();
 var cors = require('cors');
 
 var mongojs    = require('mongojs');
@@ -19,7 +19,8 @@ app.get('/tasks', function(req,res){
 //curl -X POST localhost:8000/tasks -d "subject=subjectname"
 app.post('/tasks', function (req, res) {
     var subject = req.body.subject;
-    db.tasks.insert({subject , status: 5 },function (err, data) {
+    // var status  = parseInt(req.body.status);
+    db.tasks.insert({subject , status: 1 },function (err, data) {
         res.json(data);
     });
 });
